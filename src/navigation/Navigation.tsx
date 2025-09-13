@@ -4,10 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text } from 'react-native';
 
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreenNew from '../screens/HomeScreenNew';
+import ImageDetailsScreen from '../screens/ImageDetailsScreen';
 import GalleryScreen from '../screens/GalleryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import LoginScreen from '../screens/LoginScreen';
+import { ProcessedImage } from '../store/imagesSlice';
 
 export type RootStackParamList = {
   Main: undefined;
@@ -15,13 +17,28 @@ export type RootStackParamList = {
 };
 
 export type MainTabParamList = {
-  Home: undefined;
+  HomeStack: undefined;
   Gallery: undefined;
   Settings: undefined;
 };
 
+export type HomeStackParamList = {
+  Home: undefined;
+  ImageDetails: { image: ProcessedImage };
+};
+
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
+const HomeStack = createStackNavigator<HomeStackParamList>();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+      <HomeStack.Screen name="Home" component={HomeScreenNew} />
+      <HomeStack.Screen name="ImageDetails" component={ImageDetailsScreen} />
+    </HomeStack.Navigator>
+  );
+}
 
 function MainTabs() {
   return (
@@ -30,7 +47,7 @@ function MainTabs() {
         tabBarIcon: ({ focused, color, size }: { focused: boolean; color: string; size: number }) => {
           let emoji = '⭕';
 
-          if (route.name === 'Home') {
+          if (route.name === 'HomeStack') {
             emoji = '📷';
           } else if (route.name === 'Gallery') {
             emoji = '🖼️';
@@ -46,9 +63,9 @@ function MainTabs() {
       })}
     >
       <Tab.Screen 
-        name="Home"
-        component={HomeScreen}
-        options={{ title: 'Capture' }}
+        name="HomeStack"
+        component={HomeStackScreen}
+        options={{ title: 'Gallery' }}
       />
       <Tab.Screen 
         name="Gallery" 

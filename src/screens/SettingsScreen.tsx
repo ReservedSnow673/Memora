@@ -24,6 +24,7 @@ import {
 } from '../store/settingsSlice';
 import { createOpenAIService, hasValidApiKey, getCurrentApiKey } from '../services/openai';
 import { firebaseAuth } from '../services/firebase';
+import { useTheme, ThemeMode, ColorScheme } from '../contexts/ThemeContext';
 
 export default function SettingsScreen() {
   const [apiKeyInput, setApiKeyInput] = useState('');
@@ -34,6 +35,9 @@ export default function SettingsScreen() {
   const navigation = useNavigation();
   const settings = useSelector((state: RootState) => state.settings);
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { theme, setMode, setColorScheme } = useTheme();
+  
+  const styles = createStyles(theme);
 
   const frequencyOptions = [
     { label: 'Hourly', value: 'hourly' as const },
@@ -139,6 +143,73 @@ export default function SettingsScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Settings</Text>
+      </View>
+
+      {/* Appearance */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>🎨 Appearance</Text>
+        
+        <View style={styles.settingItem}>
+          <View style={styles.settingInfo}>
+            <Text style={styles.settingLabel}>Theme Mode</Text>
+            <Text style={styles.settingDescription}>
+              {theme.mode === 'system' ? 'Follow system' : theme.mode === 'dark' ? 'Dark mode' : 'Light mode'}
+            </Text>
+          </View>
+        </View>
+        
+        <View style={styles.frequencyOptions}>
+          {(['light', 'dark', 'system'] as ThemeMode[]).map((mode) => (
+            <TouchableOpacity
+              key={mode}
+              style={[
+                styles.frequencyOption,
+                theme.mode === mode && styles.frequencyOptionActive,
+              ]}
+              onPress={() => setMode(mode)}
+            >
+              <Text style={[
+                styles.frequencyOptionText,
+                theme.mode === mode && styles.frequencyOptionTextActive,
+              ]}>
+                {mode === 'system' ? '📱 Auto' : mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.settingItem}>
+          <View style={styles.settingInfo}>
+            <Text style={styles.settingLabel}>Color Scheme</Text>
+            <Text style={styles.settingDescription}>
+              {theme.colorScheme === 'default' ? 'Default colors' : 
+               theme.colorScheme === 'highContrast' ? 'High contrast' :
+               theme.colorScheme === 'protanopia' ? 'Protanopia friendly' :
+               theme.colorScheme === 'deuteranopia' ? 'Deuteranopia friendly' :
+               'Tritanopia friendly'}
+            </Text>
+          </View>
+        </View>
+        
+        <View style={styles.frequencyOptions}>
+          {(['default', 'highContrast'] as ColorScheme[]).map((scheme) => (
+            <TouchableOpacity
+              key={scheme}
+              style={[
+                styles.frequencyOption,
+                theme.colorScheme === scheme && styles.frequencyOptionActive,
+              ]}
+              onPress={() => setColorScheme(scheme)}
+            >
+              <Text style={[
+                styles.frequencyOptionText,
+                theme.colorScheme === scheme && styles.frequencyOptionTextActive,
+              ]}>
+                {scheme === 'default' ? '🎨 Default' : '🔍 High Contrast'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       {/* OpenAI Configuration */}
@@ -324,10 +395,10 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   header: {
     paddingTop: 60,
@@ -399,6 +470,18 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     color: 'white',
+    fontWeight: '600',
+  },
+  frequencyOptionActive: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  frequencyOptionText: {
+    fontSize: 14,
+    color: theme.colors.text,
+  },
+  frequencyOptionTextActive: {
+    color: theme.colors.onPrimary,
     fontWeight: '600',
   },
   userInfo: {
