@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# API keys and sensitive data
+*.env
+config/secrets.*
+
+# Demo and testing
+demo-output.txt
+test-images/
