@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   return (
@@ -17,15 +18,15 @@ export default function LoginScreen() {
         
         <View style={styles.features}>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>🤖</Text>
+            <Ionicons name="library" size={32} color="#6366f1" />
             <Text style={styles.featureText}>AI Image Captions</Text>
           </View>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>☁️</Text>
+            <Ionicons name="cloud" size={32} color="#6366f1" />
             <Text style={styles.featureText}>Cloud Sync</Text>
           </View>
           <View style={styles.feature}>
-            <Text style={styles.featureIcon}>🔄</Text>
+            <Ionicons name="sync" size={32} color="#6366f1" />
             <Text style={styles.featureText}>Background Processing</Text>
           </View>
         </View>

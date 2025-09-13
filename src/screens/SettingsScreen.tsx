@@ -10,6 +10,7 @@ import {
   ScrollView,
   Modal,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
@@ -147,7 +148,9 @@ export default function SettingsScreen() {
 
       {/* Appearance */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🎨 Appearance</Text>
+        <Text style={styles.sectionTitle}>
+          <Ionicons name="color-palette" size={20} color="#4F46E5" /> Appearance
+        </Text>
         
         <View style={styles.settingItem}>
           <View style={styles.settingInfo}>
@@ -172,7 +175,13 @@ export default function SettingsScreen() {
                 styles.frequencyOptionText,
                 theme.mode === mode && styles.frequencyOptionTextActive,
               ]}>
-                {mode === 'system' ? '📱 Auto' : mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
+                {mode === 'system' ? (
+                  <><Ionicons name="phone-portrait" size={16} /> Auto</>
+                ) : mode === 'dark' ? (
+                  <><Ionicons name="moon" size={16} /> Dark</>
+                ) : (
+                  <><Ionicons name="sunny" size={16} /> Light</>
+                )}
               </Text>
             </TouchableOpacity>
           ))}
@@ -205,7 +214,11 @@ export default function SettingsScreen() {
                 styles.frequencyOptionText,
                 theme.colorScheme === scheme && styles.frequencyOptionTextActive,
               ]}>
-                {scheme === 'default' ? '🎨 Default' : '🔍 High Contrast'}
+                {scheme === 'default' ? (
+                  <><Ionicons name="color-palette" size={16} /> Default</>
+                ) : (
+                  <><Ionicons name="eye" size={16} /> High Contrast</>
+                )}
               </Text>
             </TouchableOpacity>
           ))}
@@ -230,7 +243,7 @@ export default function SettingsScreen() {
                   : 'Not configured'}
             </Text>
           </View>
-          <Text style={{ fontSize: 20, color: '#999' }}>▶️</Text>
+          <Ionicons name="chevron-forward" size={20} color="#999" />
         </TouchableOpacity>
 
         {settings.openAIApiKey && (
@@ -246,7 +259,7 @@ export default function SettingsScreen() {
                 Switch back to using the default API key
               </Text>
             </View>
-            <Text style={{ fontSize: 20, color: '#dc2626' }}>🗑️</Text>
+            <Ionicons name="trash" size={20} color="#dc2626" />
           </TouchableOpacity>
         )}
 

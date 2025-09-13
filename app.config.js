@@ -72,7 +72,8 @@ export default {
       ],
       [
         "expo-task-manager"
-      ]
+      ],
+      "expo-font"
     ],
     scheme: "memora",
     extra: {

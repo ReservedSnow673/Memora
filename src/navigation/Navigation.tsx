@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import HomeScreenNew from '../screens/HomeScreenNew';
 import ImageDetailsScreen from '../screens/ImageDetailsScreen';
@@ -45,17 +46,17 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }: { route: any }) => ({
         tabBarIcon: ({ focused, color, size }: { focused: boolean; color: string; size: number }) => {
-          let emoji = '⭕';
+          let iconName: string = 'ellipse';
 
           if (route.name === 'HomeStack') {
-            emoji = '📷';
+            iconName = 'camera';
           } else if (route.name === 'Gallery') {
-            emoji = '🖼️';
+            iconName = 'images';
           } else if (route.name === 'Settings') {
-            emoji = '⚙️';
+            iconName = 'settings';
           }
 
-          return <Text style={{ fontSize: size }}>{emoji}</Text>;
+          return <Ionicons name={iconName as any} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: 'gray',

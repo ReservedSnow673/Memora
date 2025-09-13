@@ -48,99 +48,99 @@ type ThemeAction =
   | { type: 'SET_SYSTEM_THEME'; payload: ColorSchemeName };
 
 const lightColors: ThemeColors = {
-  primary: '#6366f1',
-  primaryVariant: '#4f46e5',
-  secondary: '#06b6d4',
-  secondaryVariant: '#0891b2',
-  background: '#ffffff',
-  surface: '#f8fafc',
-  error: '#ef4444',
-  success: '#10b981',
-  warning: '#f59e0b',
-  info: '#3b82f6',
-  onPrimary: '#ffffff',
-  onSecondary: '#ffffff',
-  onBackground: '#1e293b',
-  onSurface: '#334155',
-  onError: '#ffffff',
-  text: '#1e293b',
-  textSecondary: '#64748b',
-  border: '#e2e8f0',
-  divider: '#f1f5f9',
-  shadow: '#00000010',
-  overlay: '#00000040',
+  primary: '#6D94C5',       // Main blue from palette
+  primaryVariant: '#5A7CA8', // Darker shade of blue
+  secondary: '#CBDCEB',     // Light blue from palette
+  secondaryVariant: '#B5CBE2', // Slightly darker light blue
+  background: '#F5EFE6',    // Cream background from palette
+  surface: '#E8DFCA',       // Warm beige from palette
+  error: '#D32F2F',         // Professional red
+  success: '#388E3C',       // Professional green
+  warning: '#F57C00',       // Professional amber
+  info: '#6D94C5',          // Use primary blue for info
+  onPrimary: '#FFFFFF',     // White text on primary
+  onSecondary: '#2C3E50',   // Dark text on secondary
+  onBackground: '#2C3E50',  // Dark text on background
+  onSurface: '#34495E',     // Slightly lighter dark text
+  onError: '#FFFFFF',       // White text on error
+  text: '#2C3E50',          // Primary text color
+  textSecondary: '#5D6D7E', // Secondary text color
+  border: '#BDC3C7',        // Light border
+  divider: '#E8DFCA',       // Use surface color for dividers
+  shadow: '#00000015',      // Subtle shadow
+  overlay: '#00000040',     // Modal overlay
 };
 
 const darkColors: ThemeColors = {
-  primary: '#818cf8',
-  primaryVariant: '#6366f1',
-  secondary: '#22d3ee',
-  secondaryVariant: '#06b6d4',
-  background: '#0f172a',
-  surface: '#1e293b',
-  error: '#f87171',
-  success: '#34d399',
-  warning: '#fbbf24',
-  info: '#60a5fa',
-  onPrimary: '#1e293b',
-  onSecondary: '#1e293b',
-  onBackground: '#f1f5f9',
-  onSurface: '#e2e8f0',
-  onError: '#1e293b',
-  text: '#f1f5f9',
-  textSecondary: '#94a3b8',
-  border: '#334155',
-  divider: '#475569',
-  shadow: '#00000030',
-  overlay: '#00000060',
+  primary: '#8FB4D3',       // Lighter blue for dark mode
+  primaryVariant: '#6D94C5', // Original blue
+  secondary: '#A8C8E0',     // Muted light blue
+  secondaryVariant: '#8FB4D3', // Same as primary
+  background: '#1A1A1A',    // Dark background
+  surface: '#2C2C2C',       // Lighter dark surface
+  error: '#F44336',         // Bright red for visibility
+  success: '#4CAF50',       // Bright green
+  warning: '#FF9800',       // Bright orange
+  info: '#8FB4D3',          // Primary blue for info
+  onPrimary: '#1A1A1A',     // Dark text on primary
+  onSecondary: '#1A1A1A',   // Dark text on secondary
+  onBackground: '#E0E0E0',  // Light text on background
+  onSurface: '#F0F0F0',     // Lighter text on surface
+  onError: '#FFFFFF',       // White text on error
+  text: '#E0E0E0',          // Primary light text
+  textSecondary: '#B0B0B0', // Secondary light text
+  border: '#404040',        // Dark border
+  divider: '#383838',       // Dark divider
+  shadow: '#00000030',      // Stronger shadow for dark mode
+  overlay: '#00000060',     // Darker overlay
 };
 
 const highContrastColors: ThemeColors = {
-  primary: '#000000',
-  primaryVariant: '#333333',
-  secondary: '#666666',
-  secondaryVariant: '#999999',
-  background: '#ffffff',
-  surface: '#f5f5f5',
-  error: '#cc0000',
-  success: '#006600',
-  warning: '#cc6600',
-  info: '#0066cc',
-  onPrimary: '#ffffff',
-  onSecondary: '#ffffff',
-  onBackground: '#000000',
-  onSurface: '#000000',
-  onError: '#ffffff',
-  text: '#000000',
-  textSecondary: '#333333',
-  border: '#000000',
-  divider: '#cccccc',
-  shadow: '#00000020',
-  overlay: '#00000080',
+  primary: '#000000',       // Pure black for high contrast
+  primaryVariant: '#333333', // Dark gray
+  secondary: '#6D94C5',     // Keep one color from palette for accent
+  secondaryVariant: '#5A7CA8', // Darker accent
+  background: '#FFFFFF',    // Pure white background
+  surface: '#F8F8F8',       // Very light gray surface
+  error: '#D50000',         // Pure red
+  success: '#2E7D32',       // Pure green
+  warning: '#F57C00',       // Pure orange
+  info: '#1976D2',          // Pure blue
+  onPrimary: '#FFFFFF',     // White on black
+  onSecondary: '#FFFFFF',   // White on blue
+  onBackground: '#000000',  // Black on white
+  onSurface: '#000000',     // Black on surface
+  onError: '#FFFFFF',       // White on red
+  text: '#000000',          // Pure black text
+  textSecondary: '#333333', // Dark gray text
+  border: '#000000',        // Black borders
+  divider: '#CCCCCC',       // Gray dividers
+  shadow: '#00000025',      // Stronger shadow
+  overlay: '#00000080',     // Strong overlay
 };
 
 const protanopiaColors: ThemeColors = {
-  primary: '#0066cc',
-  primaryVariant: '#004499',
-  secondary: '#ffaa00',
-  secondaryVariant: '#cc8800',
-  background: '#ffffff',
-  surface: '#f8fafc',
-  error: '#cc6600',
-  success: '#0088cc',
-  warning: '#ffaa00',
-  info: '#0066cc',
-  onPrimary: '#ffffff',
-  onSecondary: '#000000',
-  onBackground: '#1e293b',
-  onSurface: '#334155',
-  onError: '#ffffff',
-  text: '#1e293b',
-  textSecondary: '#64748b',
-  border: '#e2e8f0',
-  divider: '#f1f5f9',
-  shadow: '#00000010',
-  overlay: '#00000040',
+  primary: '#6D94C5',       // Blue from palette (safe for protanopia)
+  primaryVariant: '#5A7CA8', // Darker blue
+  secondary: '#8E7CC3',     // Purple tint instead of green
+  secondaryVariant: '#7566B3', // Darker purple
+  background: '#F5EFE6',    // Keep background from palette
+  surface: '#E8DFCA',       // Keep surface from palette
+  error: '#D84315',         // Orange-red (distinguishable)
+  success: '#5D4E75',       // Purple instead of green
+  warning: '#F57C00',       // Orange
+  info: '#6D94C5',          // Blue
+  onPrimary: '#FFFFFF',     // White on primary
+  onSecondary: '#FFFFFF',   // White on secondary
+  onBackground: '#2C3E50',  // Dark text
+  onSurface: '#34495E',     // Dark text
+  onError: '#FFFFFF',       // White on error
+  text: '#2C3E50',          // Dark text
+  textSecondary: '#5D6D7E', // Gray text
+  border: '#BDC3C7',        // Light border
+  divider: '#E8DFCA',       // Surface color
+  shadow: '#00000015',      // Subtle shadow
+  overlay: '#00000040',     // Modal overlay
 };
 
 const getColorsForScheme = (isDark: boolean, colorScheme: ColorScheme): ThemeColors => {
@@ -149,18 +149,36 @@ const getColorsForScheme = (isDark: boolean, colorScheme: ColorScheme): ThemeCol
   }
   
   if (colorScheme === 'protanopia' || colorScheme === 'deuteranopia') {
-    return isDark ? { ...protanopiaColors, background: '#0f172a', surface: '#1e293b', text: '#f1f5f9', onBackground: '#f1f5f9', onSurface: '#e2e8f0' } : protanopiaColors;
+    return isDark ? { 
+      ...protanopiaColors, 
+      background: '#1A1A1A', 
+      surface: '#2C2C2C', 
+      text: '#E0E0E0', 
+      onBackground: '#E0E0E0', 
+      onSurface: '#F0F0F0',
+      border: '#404040',
+      divider: '#383838'
+    } : protanopiaColors;
   }
   
   if (colorScheme === 'tritanopia') {
     const tritColors = {
       ...protanopiaColors,
-      primary: '#cc0066',
-      primaryVariant: '#990044',
-      secondary: '#006633',
-      secondaryVariant: '#004422',
+      primary: '#C75B7A',     // Pink-red (safe for tritanopia)
+      primaryVariant: '#A8495C', // Darker pink-red
+      secondary: '#6D94C5',   // Keep blue from palette
+      secondaryVariant: '#5A7CA8', // Darker blue
     };
-    return isDark ? { ...tritColors, background: '#0f172a', surface: '#1e293b', text: '#f1f5f9', onBackground: '#f1f5f9', onSurface: '#e2e8f0' } : tritColors;
+    return isDark ? { 
+      ...tritColors, 
+      background: '#1A1A1A', 
+      surface: '#2C2C2C', 
+      text: '#E0E0E0', 
+      onBackground: '#E0E0E0', 
+      onSurface: '#F0F0F0',
+      border: '#404040',
+      divider: '#383838'
+    } : tritColors;
   }
   
   return isDark ? darkColors : lightColors;

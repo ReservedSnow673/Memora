@@ -13,6 +13,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ProcessedImage } from '../store/imagesSlice';
 import { useDispatch } from 'react-redux';
 import { removeImage } from '../store/imagesSlice';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,28 +36,28 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
     switch (status) {
       case 'processed':
         return { 
-          emoji: '✅', 
+          icon: 'checkmark-circle', 
           color: theme.colors.success, 
           text: 'Processed',
           description: 'Image has been successfully processed and captioned'
         };
       case 'processing':
         return { 
-          emoji: '⏳', 
+          icon: 'time', 
           color: theme.colors.warning, 
           text: 'Processing',
           description: 'Image is currently being processed by AI'
         };
       case 'error':
         return { 
-          emoji: '❌', 
+          icon: 'close-circle', 
           color: theme.colors.error, 
           text: 'Error',
           description: 'An error occurred while processing this image'
         };
       default:
         return { 
-          emoji: '⭕', 
+          icon: 'ellipse-outline', 
           color: theme.colors.textSecondary, 
           text: 'Unprocessed',
           description: 'Image is waiting to be processed'
@@ -108,14 +109,14 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backEmoji}>👈</Text>
+          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
           <Text style={[styles.backText, { color: theme.colors.text }]}>Back</Text>
         </TouchableOpacity>
         
         <Text style={[styles.title, { color: theme.colors.text }]}>Image Details</Text>
         
         <TouchableOpacity style={[styles.statusBadge, { backgroundColor: statusInfo.color }]}>
-          <Text style={styles.statusEmoji}>{statusInfo.emoji}</Text>
+          <Ionicons name={statusInfo.icon as any} size={16} color="white" />
           <Text style={styles.statusText}>{statusInfo.text}</Text>
         </TouchableOpacity>
       </View>
@@ -126,7 +127,8 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
           <Image source={{ uri: image.uri }} style={styles.image} resizeMode="contain" />
           {image.status === 'processing' && (
             <View style={styles.processingOverlay}>
-              <Text style={styles.processingText}>🔄 Processing...</Text>
+              <Ionicons name="sync" size={24} color="white" />
+              <Text style={styles.processingText}>Processing...</Text>
             </View>
           )}
         </View>
@@ -158,11 +160,13 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
 
         {/* Processing Status */}
         <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>⚡ Processing Status</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            <Ionicons name="flash" size={20} color={theme.colors.text} /> Processing Status
+          </Text>
           
           <View style={styles.statusContainer}>
             <View style={[styles.statusIndicator, { backgroundColor: statusInfo.color }]}>
-              <Text style={styles.statusIndicatorEmoji}>{statusInfo.emoji}</Text>
+              <Ionicons name={statusInfo.icon as any} size={20} color="white" />
             </View>
             <View style={styles.statusDetails}>
               <Text style={[styles.statusTitle, { color: theme.colors.text }]}>{statusInfo.text}</Text>
@@ -174,21 +178,27 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
 
           {image.processingStarted && (
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>🚀 Started</Text>
+              <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>
+                <Ionicons name="rocket" size={16} color={theme.colors.textSecondary} /> Started
+              </Text>
               <Text style={[styles.infoValue, { color: theme.colors.text }]}>{formatDate(image.processingStarted)}</Text>
             </View>
           )}
 
           {image.processingCompleted && (
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>🏁 Completed</Text>
+              <Text style={[styles.infoLabel, { color: theme.colors.textSecondary }]}>
+                <Ionicons name="checkmark-circle" size={16} color={theme.colors.textSecondary} /> Completed
+              </Text>
               <Text style={[styles.infoValue, { color: theme.colors.text }]}>{formatDate(image.processingCompleted)}</Text>
             </View>
           )}
 
           {image.error && (
             <View style={[styles.errorContainer, { backgroundColor: theme.colors.error + '20' }]}>
-              <Text style={[styles.errorText, { color: theme.colors.error }]}>❌ {image.error}</Text>
+              <Text style={[styles.errorText, { color: theme.colors.error }]}>
+                <Ionicons name="close-circle" size={16} color={theme.colors.error} /> {image.error}
+              </Text>
             </View>
           )}
         </View>
@@ -196,7 +206,9 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
         {/* AI Caption */}
         {image.caption && (
           <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>🤖 AI Caption</Text>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              <Ionicons name="library" size={20} color={theme.colors.text} /> AI Caption
+            </Text>
             <View style={[styles.captionContainer, { backgroundColor: theme.colors.primary + '10' }]}>
               <Text style={[styles.captionText, { color: theme.colors.text }]}>{image.caption}</Text>
             </View>
@@ -205,13 +217,15 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
 
         {/* Actions */}
         <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>⚙️ Actions</Text>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            <Ionicons name="settings" size={20} color={theme.colors.text} /> Actions
+          </Text>
           
           <TouchableOpacity 
             style={[styles.actionButton, { backgroundColor: theme.colors.error }]}
             onPress={handleDelete}
           >
-            <Text style={styles.actionButtonEmoji}>🗑️</Text>
+            <Ionicons name="trash" size={20} color="white" />
             <Text style={styles.actionButtonText}>Remove from Memora</Text>
           </TouchableOpacity>
         </View>
@@ -239,9 +253,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  backEmoji: {
-    fontSize: 20,
-  },
   backText: {
     fontSize: 16,
     fontWeight: '500',
@@ -257,9 +268,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 16,
     gap: 4,
-  },
-  statusEmoji: {
-    fontSize: 14,
   },
   statusText: {
     fontSize: 12,
@@ -346,9 +354,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  statusIndicatorEmoji: {
-    fontSize: 20,
-  },
   statusDetails: {
     flex: 1,
   },
@@ -388,9 +393,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
-  },
-  actionButtonEmoji: {
-    fontSize: 18,
   },
   actionButtonText: {
     color: 'white',

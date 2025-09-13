@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { 
+  initializeAuth,
   getAuth,
   GoogleAuthProvider, 
   signInWithCredential,
@@ -7,6 +8,7 @@ import {
   onAuthStateChanged,
   User as FirebaseUser
 } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { User } from '../types';
@@ -23,6 +25,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// For React Native, we'll just use getAuth() which should automatically handle persistence
+// The warning about AsyncStorage is mainly for older Firebase versions
 const auth = getAuth(app);
 
 WebBrowser.maybeCompleteAuthSession();

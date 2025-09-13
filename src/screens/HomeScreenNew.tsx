@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import { RootState } from '../store';
 import { useTheme } from '../contexts/ThemeContext';
@@ -136,13 +137,29 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'processed':
-        return { emoji: '✅', color: theme.colors.success, text: 'Processed' };
+        return { 
+          icon: 'checkmark-circle', 
+          color: theme.colors.success, 
+          text: 'Processed' 
+        };
       case 'processing':
-        return { emoji: '⏳', color: theme.colors.warning, text: 'Processing' };
+        return { 
+          icon: 'time', 
+          color: theme.colors.warning, 
+          text: 'Processing' 
+        };
       case 'error':
-        return { emoji: '❌', color: theme.colors.error, text: 'Error' };
+        return { 
+          icon: 'close-circle', 
+          color: theme.colors.error, 
+          text: 'Error' 
+        };
       default:
-        return { emoji: '⭕', color: theme.colors.textSecondary, text: 'Unprocessed' };
+        return { 
+          icon: 'ellipse-outline', 
+          color: theme.colors.textSecondary, 
+          text: 'Unprocessed' 
+        };
     }
   };
 
@@ -158,11 +175,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Image source={{ uri: item.uri }} style={styles.imagePreview} />
         <View style={styles.imageOverlay}>
           <View style={[styles.statusBadge, { backgroundColor: statusInfo.color }]}>
-            <Text style={styles.statusEmoji}>{statusInfo.emoji}</Text>
+            <Ionicons name={statusInfo.icon as any} size={12} color="white" />
           </View>
         </View>
         {item.status === 'processing' && (
           <View style={styles.processingOverlay}>
+            <Ionicons name="refresh" size={16} color="white" style={{ marginRight: 8 }} />
             <Text style={styles.processingText}>Processing...</Text>
           </View>
         )}
@@ -206,7 +224,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={styles.settingsButton}
           onPress={() => navigation.navigate('Settings')}
         >
-          <Text style={styles.settingsEmoji}>⚙️</Text>
+          <Ionicons name="settings-outline" size={24} color={theme.colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -221,12 +239,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
         <TouchableOpacity style={[styles.actionButton, styles.primaryButton]} onPress={takePhoto}>
-          <Text style={styles.actionButtonEmoji}>📷</Text>
+          <Ionicons name="camera" size={20} color={theme.colors.onPrimary} />
           <Text style={styles.actionButtonText}>Take Photo</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={pickImage}>
-          <Text style={styles.actionButtonEmoji}>🖼️</Text>
+          <Ionicons name="images" size={20} color={theme.colors.onPrimary} />
           <Text style={styles.actionButtonText}>Pick Image</Text>
         </TouchableOpacity>
       </View>
@@ -234,15 +252,19 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       {/* Processing Status */}
       {processingQueue.length > 0 && (
         <View style={styles.processingStatus}>
-          <Text style={[styles.processingStatusText, { color: theme.colors.text }]}>
-            ⏳ {processingQueue.length} image{processingQueue.length > 1 ? 's' : ''} in queue
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="time" size={16} color={theme.colors.text} style={{ marginRight: 8 }} />
+            <Text style={[styles.processingStatusText, { color: theme.colors.text }]}>
+              {processingQueue.length} image{processingQueue.length > 1 ? 's' : ''} in queue
+            </Text>
+          </View>
           {!isProcessing && (
             <TouchableOpacity 
               style={[styles.processButton, { backgroundColor: theme.colors.warning }]}
               onPress={() => BackgroundProcessingService.processImagesInForeground()}
             >
-              <Text style={styles.processButtonText}>⚡ Process Now</Text>
+              <Ionicons name="flash" size={12} color="white" style={{ marginRight: 4 }} />
+              <Text style={styles.processButtonText}>Process Now</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -251,7 +273,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       {/* Images Grid */}
       {filteredImages.length === 0 ? (
         <View style={styles.emptyState}>
-          <Text style={styles.emptyStateEmoji}>📱</Text>
+          <Ionicons 
+            name="images-outline" 
+            size={64} 
+            color={theme.colors.textSecondary} 
+            style={{ marginBottom: 16 }}
+          />
           <Text style={[styles.emptyStateTitle, { color: theme.colors.text }]}>
             {selectedFilter === 'all' ? 'No images yet' : `No ${selectedFilter} images`}
           </Text>
@@ -300,9 +327,6 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   settingsButton: {
     padding: 8,
-  },
-  settingsEmoji: {
-    fontSize: 24,
   },
   filterBar: {
     flexDirection: 'row',
@@ -353,13 +377,11 @@ const createStyles = (theme: any) => StyleSheet.create({
   secondaryButton: {
     backgroundColor: theme.colors.secondary,
   },
-  actionButtonEmoji: {
-    fontSize: 20,
-  },
   actionButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: theme.colors.onPrimary,
+    marginLeft: 8,
   },
   imagesList: {
     paddingHorizontal: 16,
@@ -395,9 +417,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  statusEmoji: {
-    fontSize: 12,
-  },
   processingOverlay: {
     position: 'absolute',
     bottom: 0,
@@ -406,6 +425,8 @@ const createStyles = (theme: any) => StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.7)',
     paddingVertical: 4,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   processingText: {
     color: 'white',
@@ -417,10 +438,6 @@ const createStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
-  },
-  emptyStateEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
   },
   emptyStateTitle: {
     fontSize: 24,
