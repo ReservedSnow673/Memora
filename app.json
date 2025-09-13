@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Memora",
+    "slug": "memora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "backgroundModes": [
+        "background-fetch"
+      ],
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs access to camera to capture photos for generating descriptions.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select photos for generating descriptions."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES",
+        "RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you select images for generating descriptions."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Memora to access your photos.",
+          "savePhotosPermission": "Allow Memora to save photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      "expo-web-browser",
+      "expo-secure-store"
+    ]
+  }
+}
