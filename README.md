@@ -39,7 +39,7 @@ Memora is a **React Native app** that gives photos a voice. It automatically gen
 ### Installation  
 ```bash
 # Clone repo  
-git clone https://github.com/ReservedSnow673/memora.git  
+git clone https://github.com/ReservedSnow673/Memora.git  
 
 # Enter project  
 cd memora  
