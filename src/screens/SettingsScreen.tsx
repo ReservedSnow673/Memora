@@ -149,7 +149,7 @@ export default function SettingsScreen() {
       {/* Appearance */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          <Ionicons name="color-palette" size={20} color="#4F46E5" /> Appearance
+          <Ionicons name="color-palette" size={20} color={theme.colors.primary} /> Appearance
         </Text>
         
         <View style={styles.settingItem}>
@@ -243,23 +243,23 @@ export default function SettingsScreen() {
                   : 'Not configured'}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={20} color="#999" />
+          <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
         </TouchableOpacity>
 
         {settings.openAIApiKey && (
           <TouchableOpacity 
-            style={[styles.settingItem, { backgroundColor: '#fff5f5' }]}
+            style={[styles.settingItem, { backgroundColor: theme.colors.error + '15' }]}
             onPress={() => {
               dispatch(setOpenAIApiKey(''));
             }}
           >
             <View style={styles.settingInfo}>
-              <Text style={[styles.settingLabel, { color: '#dc2626' }]}>Clear Custom Key</Text>
+              <Text style={[styles.settingLabel, { color: theme.colors.error }]}>Clear Custom Key</Text>
               <Text style={styles.settingDescription}>
                 Switch back to using the default API key
               </Text>
             </View>
-            <Ionicons name="trash" size={20} color="#dc2626" />
+            <Ionicons name="trash" size={20} color={theme.colors.error} />
           </TouchableOpacity>
         )}
 
@@ -275,6 +275,8 @@ export default function SettingsScreen() {
             onValueChange={(value) => {
               dispatch(setAutoProcessImages(value));
             }}
+            trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+            thumbColor={settings.autoProcessImages ? theme.colors.onPrimary : theme.colors.surface}
           />
         </View>
       </View>
@@ -298,14 +300,14 @@ export default function SettingsScreen() {
               key={option.value}
               style={[
                 styles.frequencyOption,
-                settings.backgroundFetchFrequency === option.value && styles.selectedOption,
+                settings.backgroundFetchFrequency === option.value && styles.frequencyOptionActive,
               ]}
               onPress={() => handleFrequencyChange(option.value)}
             >
               <Text
                 style={[
-                  styles.frequencyText,
-                  settings.backgroundFetchFrequency === option.value && styles.selectedText,
+                  styles.frequencyOptionText,
+                  settings.backgroundFetchFrequency === option.value && styles.frequencyOptionTextActive,
                 ]}
               >
                 {option.label}
@@ -326,6 +328,8 @@ export default function SettingsScreen() {
             onValueChange={(value) => {
               dispatch(setWifiOnly(value));
             }}
+            trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+            thumbColor={settings.wifiOnly ? theme.colors.onPrimary : theme.colors.surface}
           />
         </View>
 
@@ -341,6 +345,8 @@ export default function SettingsScreen() {
             onValueChange={(value) => {
               dispatch(setChargingOnly(value));
             }}
+            trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+            thumbColor={settings.chargingOnly ? theme.colors.onPrimary : theme.colors.surface}
           />
         </View>
       </View>
@@ -352,7 +358,7 @@ export default function SettingsScreen() {
         {isAuthenticated ? (
           <>
             <View style={styles.userInfo}>
-              <Text style={{ fontSize: 20, color: '#34C759' }}>✅</Text>
+              <Text style={{ fontSize: 20, color: theme.colors.success }}>✅</Text>
               <Text style={styles.userInfoText}>
                 Signed in as {user?.displayName || user?.email}
               </Text>
@@ -377,6 +383,8 @@ export default function SettingsScreen() {
                 onValueChange={(value) => {
                   dispatch(setSaveToGooglePhotos(value));
                 }}
+                trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                thumbColor={settings.saveToGooglePhotos ? theme.colors.onPrimary : theme.colors.surface}
               />
             </View>
           </>
@@ -417,26 +425,26 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.background,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
   },
   section: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.surface,
     marginTop: 20,
     paddingVertical: 10,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: theme.colors.text,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.border,
   },
   settingItem: {
     flexDirection: 'row',
@@ -445,19 +453,19 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.border,
   },
   settingInfo: {
     flex: 1,
   },
   settingLabel: {
     fontSize: 16,
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 2,
   },
   settingDescription: {
     fontSize: 13,
-    color: '#666',
+    color: theme.colors.textSecondary,
     lineHeight: 18,
   },
   frequencyOptions: {
@@ -471,19 +479,10 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: 12,
     marginHorizontal: 4,
     borderRadius: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: theme.colors.background,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
     alignItems: 'center',
-  },
-  selectedOption: {
-    backgroundColor: '#007AFF',
-  },
-  frequencyText: {
-    fontSize: 14,
-    color: '#333',
-  },
-  selectedText: {
-    color: 'white',
-    fontWeight: '600',
   },
   frequencyOptionActive: {
     backgroundColor: theme.colors.primary,
@@ -506,26 +505,26 @@ const createStyles = (theme: any) => StyleSheet.create({
   userInfoText: {
     marginLeft: 10,
     fontSize: 14,
-    color: '#333',
+    color: theme.colors.text,
   },
   signInButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#4285F4',
+    backgroundColor: theme.colors.primary,
     marginHorizontal: 20,
     marginVertical: 10,
     paddingVertical: 12,
     borderRadius: 8,
   },
   signInButtonText: {
-    color: 'white',
+    color: theme.colors.onPrimary,
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 10,
   },
   signOutButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: theme.colors.error,
     marginHorizontal: 20,
     marginVertical: 10,
     paddingVertical: 12,
@@ -533,18 +532,18 @@ const createStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
   },
   signOutButtonText: {
-    color: 'white',
+    color: theme.colors.onError,
     fontSize: 16,
     fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: theme.colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     margin: 20,
     padding: 20,
     borderRadius: 10,
@@ -553,22 +552,24 @@ const createStyles = (theme: any) => StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 10,
   },
   modalSubtitle: {
     fontSize: 14,
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginBottom: 20,
     lineHeight: 20,
   },
   apiKeyInput: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
     marginBottom: 20,
+    backgroundColor: theme.colors.background,
+    color: theme.colors.text,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -582,18 +583,20 @@ const createStyles = (theme: any) => StyleSheet.create({
     marginHorizontal: 5,
   },
   cancelButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: theme.colors.background,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   cancelButtonText: {
-    color: '#333',
+    color: theme.colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
   saveButtonText: {
-    color: 'white',
+    color: theme.colors.onPrimary,
     fontSize: 16,
     fontWeight: '600',
   },

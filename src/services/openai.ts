@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system';
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 // Default API key - replace with your actual OpenAI API key
-const DEFAULT_OPENAI_API_KEY = 'sk-proj-_VlzIbwSuFVGrK3Fb4i1YSQQ8zcEkQpBQZ7V6fOd_h7_6-w4GlnwjOhfA7T3BlbkFJe1_oU8rZYh0U5rGzN9fH5m-K2mRcGYv8pC7dT6zMqJh4v3C8i-L9eB2tX5sP1r9';
+const DEFAULT_OPENAI_API_KEY = '';
 
 export class OpenAIService {
   private apiKey: string;
