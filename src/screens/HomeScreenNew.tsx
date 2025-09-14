@@ -24,7 +24,8 @@ import { ProcessedImage } from '../store/imagesSlice';
 import BackgroundProcessingService from '../services/backgroundProcessing';
 
 const { width } = Dimensions.get('window');
-const ITEM_SIZE = (width - 48) / 2; // 2 columns with margins
+const numColumns = width > 768 ? 3 : 2; // 3 columns on tablets, 2 on phones
+const ITEM_SIZE = (width - (16 * 2) - (16 * (numColumns - 1))) / numColumns; // Dynamic sizing
 
 interface HomeScreenProps {
   navigation: any;
@@ -389,8 +390,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </TouchableOpacity>
         
         <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={pickImage}>
-          <Ionicons name="images" size={20} color={theme.colors.onPrimary} />
-          <Text style={styles.actionButtonText}>Pick Multiple</Text>
+          <Ionicons name="images" size={20} color={theme.colors.onSecondary} />
+          <Text style={[styles.actionButtonText, { color: theme.colors.onSecondary }]}>Pick Multiple</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={[styles.actionButton, styles.tertiaryButton]} onPress={browseGallery}>
@@ -450,7 +451,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <FlatList
           data={filteredImages}
           renderItem={renderImageItem}
-          numColumns={2}
+          numColumns={numColumns}
+          key={numColumns} // Force re-render when columns change
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.imagesList}
           showsVerticalScrollIndicator={false}
@@ -478,10 +480,12 @@ const createStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 16,
+    minHeight: 60, // Ensure adequate touch targets
   },
   title: {
-    fontSize: 28,
+    fontSize: width > 375 ? 28 : 24, // Smaller title on small screens
     fontWeight: 'bold',
+    color: theme.colors.text,
   },
   settingsButton: {
     padding: 8,
@@ -515,17 +519,19 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: theme.colors.onPrimary,
   },
   actionButtons: {
-    flexDirection: 'row',
+    flexDirection: width > 480 ? 'row' : 'column', // Stack on small screens
     paddingHorizontal: 16,
     paddingBottom: 16,
     gap: 12,
   },
   actionButton: {
-    flex: 1,
+    flex: width > 480 ? 1 : undefined, // Full width on small screens
+    minHeight: 48, // Ensure touch target is large enough
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
+    paddingHorizontal: 12,
     borderRadius: 12,
     gap: 8,
   },
@@ -536,7 +542,7 @@ const createStyles = (theme: any) => StyleSheet.create({
     backgroundColor: theme.colors.secondary,
   },
   tertiaryButton: {
-    backgroundColor: theme.colors.accent,
+    backgroundColor: theme.colors.info,
   },
   actionButtonText: {
     fontSize: 16,

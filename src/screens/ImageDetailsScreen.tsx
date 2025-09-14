@@ -359,8 +359,9 @@ const createStyles = (theme: any) => StyleSheet.create({
     fontWeight: '500',
   },
   title: {
-    fontSize: 20,
+    fontSize: width > 375 ? 20 : 18,
     fontWeight: 'bold',
+    color: theme.colors.text,
   },
   statusBadge: {
     flexDirection: 'row',
@@ -391,7 +392,8 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   image: {
     width: width - 32,
-    height: (width - 32) * 0.8,
+    height: Math.min((width - 32) * 0.8, height * 0.4), // Limit height on tall screens
+    maxHeight: 400, // Maximum height for very large screens
   },
   processingOverlay: {
     position: 'absolute',

@@ -15,7 +15,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ProcessedImage } from '../store/imagesSlice';
 
 const { width } = Dimensions.get('window');
-const ITEM_SIZE = (width - 48) / 2; // 2 columns with margins
+const numColumns = width > 768 ? 3 : 2; // 3 columns on tablets, 2 on phones
+const ITEM_SIZE = (width - (16 * 2) - (8 * 2 * numColumns)) / numColumns; // Dynamic sizing
 
 interface GalleryScreenProps {
   navigation: any;
@@ -57,7 +58,13 @@ export default function GalleryScreen({ navigation }: GalleryScreenProps) {
 
   const renderImageItem = ({ item }: { item: ProcessedImage }) => (
     <TouchableOpacity 
-      style={[styles.imageItem, { backgroundColor: theme.colors.surface }]}
+      style={[
+        styles.imageItem, 
+        { 
+          backgroundColor: theme.colors.surface,
+          shadowColor: theme.colors.shadow,
+        }
+      ]}
       onPress={() => handleImagePress(item)}
     >
       <Image 
@@ -127,7 +134,8 @@ export default function GalleryScreen({ navigation }: GalleryScreenProps) {
           data={images}
           renderItem={renderImageItem}
           keyExtractor={(item) => item.id}
-          numColumns={2}
+          numColumns={numColumns}
+          key={numColumns} // Force re-render when columns change
           contentContainerStyle={styles.galleryContainer}
           showsVerticalScrollIndicator={false}
         />
@@ -143,7 +151,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     alignItems: 'center',
-    paddingTop: 60,
+    paddingTop: width > 375 ? 60 : 50, // Adjust for different screen sizes
   },
   title: {
     fontSize: 28,
@@ -164,9 +172,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     elevation: 2,
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
   },
   imagePreview: {
