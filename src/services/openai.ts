@@ -23,8 +23,8 @@ export class OpenAIService {
       const base64Image = await this.convertImageToBase64(imageUri);
       
       const prompt = isLongDescription 
-        ? "Provide a detailed, descriptive caption for this image. Include information about objects, people, setting, mood, colors, and any notable details. Write 2-4 sentences."
-        : "Provide a short, concise alt-text description for this image in 1-2 sentences. Focus on the main subject and key visual elements.";
+        ? "You are an agent describing images to a blind person. There is an image attached with this prompt, describe it to a blind person in 1000 characters or less, but make sure the description is not generic. For example, for a kid smiling while cutting a cake, don't just describe it as \"Person cutting birthday cake\", make sure the description has the image. Only give me the image description, no other commentary."
+        : "You are an agent describing images to a blind person. There is an image attached with this prompt, describe it to a blind person in 150 characters or less, but make sure the description is not generic. For example, for a kid smiling while cutting a cake, don't just describe it as \"Person cutting birthday cake\", make sure the description has the image. Only give me the image description, no other commentary.";
 
       const response = await fetch(OPENAI_API_URL, {
         method: 'POST',

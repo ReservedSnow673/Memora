@@ -3,62 +3,185 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Dimensions,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import { Ionicons } from '@expo/vector-icons';
 import { RootState } from '../store';
+import { useTheme } from '../contexts/ThemeContext';
+import { ProcessedImage } from '../store/imagesSlice';
 
-export default function GalleryScreen() {
-  const captions = useSelector((state: RootState) => state.captions.items);
+const { width } = Dimensions.get('window');
+const ITEM_SIZE = (width - 48) / 2; // 2 columns with margins
+
+interface GalleryScreenProps {
+  navigation: any;
+}
+
+export default function GalleryScreen({ navigation }: GalleryScreenProps) {
+  const images = useSelector((state: RootState) => state.images.items);
+  const { theme } = useTheme();
+
+  const handleImagePress = (image: ProcessedImage) => {
+    navigation.navigate('ImageDetails', { image });
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'processed':
+        return 'checkmark-circle';
+      case 'processing':
+        return 'time';
+      case 'unprocessed':
+        return 'ellipse-outline';
+      default:
+        return 'help-circle';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'processed':
+        return theme.colors.success;
+      case 'processing':
+        return theme.colors.warning;
+      case 'unprocessed':
+        return theme.colors.textSecondary;
+      default:
+        return theme.colors.error;
+    }
+  };
+
+  const renderImageItem = ({ item }: { item: ProcessedImage }) => (
+    <TouchableOpacity 
+      style={[styles.imageItem, { backgroundColor: theme.colors.surface }]}
+      onPress={() => handleImagePress(item)}
+    >
+      <Image 
+        source={{ uri: item.uri }} 
+        style={styles.imagePreview}
+        resizeMode="cover"
+      />
+      
+      {/* Status Badge */}
+      <View style={styles.imageOverlay}>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
+          <Ionicons 
+            name={getStatusIcon(item.status) as any} 
+            size={12} 
+            color="white" 
+          />
+        </View>
+      </View>
+      
+      {/* Caption Preview */}
+      {item.caption && (
+        <View style={[styles.captionPreview, { backgroundColor: theme.colors.surface }]}>
+          <Text style={[styles.captionText, { color: theme.colors.text }]} numberOfLines={2}>
+            {item.caption}
+          </Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Gallery</Text>
-        <Text style={styles.subtitle}>Your AI-captioned memories</Text>
+        <Text style={[styles.title, { color: theme.colors.text }]}>Gallery</Text>
+        <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+          Your AI-captioned memories
+        </Text>
       </View>
 
-      {captions.length === 0 ? (
+      {images.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyTitle}>No images yet</Text>
-          <Text style={styles.emptySubtitle}>
-            Take some photos to see them here with AI captions!
+          <Ionicons 
+            name="images-outline" 
+            size={64} 
+            color={theme.colors.textSecondary} 
+          />
+          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
+            No images yet
+          </Text>
+          <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
+            Take some photos to see them here with AI descriptions!
           </Text>
         </View>
       ) : (
-        <View style={styles.galleryContainer}>
-          {captions.map((caption) => (
-            <View key={caption.id} style={styles.captionCard}>
-              <Text style={styles.captionText}>{caption.shortDescription}</Text>
-              <Text style={styles.timestampText}>
-                {new Date(caption.createdAt).toLocaleDateString()}
-              </Text>
-            </View>
-          ))}
-        </View>
+        <FlatList
+          data={images}
+          renderItem={renderImageItem}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.galleryContainer}
+          showsVerticalScrollIndicator={false}
+        />
       )}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
   },
   header: {
     padding: 20,
     alignItems: 'center',
+    paddingTop: 60,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1e293b',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#64748b',
-    marginTop: 4,
+    opacity: 0.7,
+  },
+  galleryContainer: {
+    padding: 16,
+  },
+  imageItem: {
+    width: ITEM_SIZE,
+    height: ITEM_SIZE + 40,
+    margin: 8,
+    borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  imagePreview: {
+    width: '100%',
+    height: ITEM_SIZE,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+  },
+  statusBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  captionPreview: {
+    padding: 8,
+    height: 40,
+    justifyContent: 'center',
+  },
+  captionText: {
+    fontSize: 12,
+    lineHeight: 16,
   },
   emptyContainer: {
     flex: 1,
@@ -69,33 +192,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#64748b',
-    marginBottom: 12,
+    marginTop: 16,
+    marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 16,
-    color: '#64748b',
     textAlign: 'center',
     lineHeight: 24,
-  },
-  galleryContainer: {
-    padding: 20,
-  },
-  captionCard: {
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  captionText: {
-    fontSize: 16,
-    color: '#1e293b',
-    marginBottom: 8,
-  },
-  timestampText: {
-    fontSize: 14,
-    color: '#64748b',
   },
 });

@@ -70,30 +70,43 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: false,
         quality: 0.8,
+        allowsMultipleSelection: true, // Enable multiple selection
       });
 
-      if (!result.canceled && result.assets[0]) {
-        const asset = result.assets[0];
-        const imageData: Omit<ProcessedImage, 'status'> = {
-          id: Date.now().toString(),
-          uri: asset.uri,
-          filename: asset.fileName || `image_${Date.now()}.jpg`,
-          width: asset.width,
-          height: asset.height,
-          mediaType: 'photo',
-          creationTime: Date.now(),
-        };
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        // Process each selected image
+        const promises = result.assets.map(async (asset) => {
+          const imageData: Omit<ProcessedImage, 'status'> = {
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Ensure unique IDs
+            uri: asset.uri,
+            filename: asset.fileName || `image_${Date.now()}.jpg`,
+            width: asset.width,
+            height: asset.height,
+            mediaType: 'photo',
+            creationTime: Date.now(),
+          };
 
-        dispatch(addImage(imageData));
+          dispatch(addImage(imageData));
+          
+          if (settings.autoProcessImages) {
+            // Add to background processing queue instead of processing immediately
+            BackgroundProcessingService.addImageToQueue(imageData.id);
+          }
+          
+          return imageData;
+        });
+
+        await Promise.all(promises);
         
-        if (settings.autoProcessImages) {
-          // Add to background processing queue instead of processing immediately
-          BackgroundProcessingService.addImageToQueue(imageData.id);
-        }
+        const selectedCount = result.assets.length;
+        Alert.alert(
+          'Images Added', 
+          `Successfully added ${selectedCount} image${selectedCount > 1 ? 's' : ''} to your gallery.`
+        );
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to pick image');
+      Alert.alert('Error', 'Failed to pick images');
     }
   };
 
@@ -126,6 +139,49 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     } catch (error) {
       console.error('Error taking photo:', error);
       Alert.alert('Error', 'Failed to take photo');
+    }
+  };
+
+  const browseGallery = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required', 
+          'Please grant photo library permissions to browse your gallery.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => MediaLibrary.requestPermissionsAsync() }
+          ]
+        );
+        return;
+      }
+
+      // Get assets from device gallery
+      const albumAssets = await MediaLibrary.getAssetsAsync({
+        mediaType: 'photo',
+        first: 50, // Load first 50 images
+        sortBy: [[MediaLibrary.SortBy.creationTime, false]], // Most recent first
+      });
+
+      if (albumAssets.assets.length === 0) {
+        Alert.alert('No Images', 'No images found in your gallery.');
+        return;
+      }
+
+      // For now, we'll use the image picker for better UX
+      // In a future update, we could create a custom gallery browser
+      Alert.alert(
+        'Browse Gallery', 
+        `Found ${albumAssets.totalCount} images in your gallery. Use "Pick from Gallery" to select multiple images.`,
+        [
+          { text: 'OK' },
+          { text: 'Pick Images', onPress: pickImage }
+        ]
+      );
+    } catch (error) {
+      console.error('Error browsing gallery:', error);
+      Alert.alert('Error', 'Failed to browse gallery');
     }
   };
 
@@ -245,7 +301,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         
         <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={pickImage}>
           <Ionicons name="images" size={20} color={theme.colors.onPrimary} />
-          <Text style={styles.actionButtonText}>Pick Image</Text>
+          <Text style={styles.actionButtonText}>Pick Multiple</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={[styles.actionButton, styles.tertiaryButton]} onPress={browseGallery}>
+          <Ionicons name="grid" size={20} color={theme.colors.onPrimary} />
+          <Text style={styles.actionButtonText}>Browse All</Text>
         </TouchableOpacity>
       </View>
 
@@ -376,6 +437,9 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   secondaryButton: {
     backgroundColor: theme.colors.secondary,
+  },
+  tertiaryButton: {
+    backgroundColor: theme.colors.accent,
   },
   actionButtonText: {
     fontSize: 16,
