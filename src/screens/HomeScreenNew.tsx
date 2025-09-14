@@ -185,6 +185,95 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
+  const importAllGalleryImages = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required', 
+          'Please grant photo library permissions to import your gallery.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => MediaLibrary.requestPermissionsAsync() }
+          ]
+        );
+        return;
+      }
+
+      // Show confirmation dialog first
+      Alert.alert(
+        'Import All Images',
+        'This will import all images from your photo library. This may take some time and use significant processing resources. Continue?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Import All',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                // Get all photo assets
+                const albumAssets = await MediaLibrary.getAssetsAsync({
+                  mediaType: 'photo',
+                  first: 1000, // Import up to 1000 images (adjust as needed)
+                  sortBy: [[MediaLibrary.SortBy.creationTime, false]], // Most recent first
+                });
+
+                if (albumAssets.assets.length === 0) {
+                  Alert.alert('No Images', 'No images found in your gallery.');
+                  return;
+                }
+
+                // Filter out images that are already imported
+                const existingIds = new Set(images.map(img => img.id));
+                const newAssets = albumAssets.assets.filter(asset => !existingIds.has(asset.id));
+
+                if (newAssets.length === 0) {
+                  Alert.alert('All Imported', 'All gallery images are already in Memora.');
+                  return;
+                }
+
+                // Add all new images to the store
+                const importedImages: ProcessedImage[] = [];
+                for (const asset of newAssets) {
+                  const newImage: ProcessedImage = {
+                    id: asset.id,
+                    uri: asset.uri,
+                    filename: asset.filename,
+                    width: asset.width,
+                    height: asset.height,
+                    creationTime: asset.creationTime,
+                    modificationTime: asset.modificationTime,
+                    mediaType: 'photo',
+                    albumId: asset.albumId,
+                    status: 'unprocessed',
+                  };
+                  
+                  dispatch(addImage(newImage));
+                  importedImages.push(newImage);
+                }
+
+                Alert.alert(
+                  'Import Complete',
+                  `Successfully imported ${newAssets.length} images. They will be processed automatically.`,
+                  [{ text: 'OK' }]
+                );
+
+                // Refresh the display
+                await loadImages();
+              } catch (importError) {
+                console.error('Error importing all images:', importError);
+                Alert.alert('Import Error', 'Failed to import some images. Please try again.');
+              }
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Error accessing gallery for import:', error);
+      Alert.alert('Error', 'Failed to access gallery for import');
+    }
+  };
+
   const filteredImages = images.filter(image => {
     if (selectedFilter === 'all') return true;
     return image.status === selectedFilter;
@@ -307,6 +396,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <TouchableOpacity style={[styles.actionButton, styles.tertiaryButton]} onPress={browseGallery}>
           <Ionicons name="grid" size={20} color={theme.colors.onPrimary} />
           <Text style={styles.actionButtonText}>Browse All</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Import All Button */}
+      <View style={styles.importAllContainer}>
+        <TouchableOpacity style={[styles.actionButton, styles.importAllButton]} onPress={importAllGalleryImages}>
+          <Ionicons name="download" size={20} color={theme.colors.onPrimary} />
+          <Text style={styles.actionButtonText}>Import All Gallery Images</Text>
         </TouchableOpacity>
       </View>
 
@@ -538,6 +635,19 @@ const createStyles = (theme: any) => StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontWeight: '600',
+  },
+  importAllContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  importAllButton: {
+    backgroundColor: theme.colors.info,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 8,
+    gap: 8,
   },
 });
 

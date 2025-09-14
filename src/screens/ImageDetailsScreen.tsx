@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { ProcessedImage } from '../store/imagesSlice';
 import { useDispatch } from 'react-redux';
-import { removeImage } from '../store/imagesSlice';
+import { removeImage, updateImageDetailedDescription, reprocessImage } from '../store/imagesSlice';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { OpenAIService } from '../services/openai';
 
 const { width, height } = Dimensions.get('window');
 
@@ -31,6 +33,53 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const styles = createStyles(theme);
+  
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
+  const [isReprocessing, setIsReprocessing] = useState(false);
+
+  const generateDetailedDescription = async () => {
+    if (isGeneratingDescription) return;
+    
+    setIsGeneratingDescription(true);
+    try {
+      const openaiService = new OpenAIService();
+      const detailedDescription = await openaiService.generateImageCaption(image.uri, true);
+      dispatch(updateImageDetailedDescription({ id: image.id, detailedDescription }));
+    } catch (error) {
+      Alert.alert('Error', 'Failed to generate detailed description. Please try again.');
+      console.error('Error generating detailed description:', error);
+    } finally {
+      setIsGeneratingDescription(false);
+    }
+  };
+
+  const handleReprocess = async () => {
+    if (isReprocessing) return;
+    
+    Alert.alert(
+      'Reprocess Image',
+      'This will regenerate the alt text for this image. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reprocess',
+          style: 'destructive',
+          onPress: async () => {
+            setIsReprocessing(true);
+            try {
+              dispatch(reprocessImage(image.id));
+              // Note: The actual reprocessing will be handled by the processing queue
+              Alert.alert('Success', 'Image queued for reprocessing');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to reprocess image. Please try again.');
+            } finally {
+              setIsReprocessing(false);
+            }
+          }
+        }
+      ]
+    );
+  };
 
   const getStatusInfo = (status: string) => {
     switch (status) {
@@ -207,7 +256,7 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
         {image.caption && (
           <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              <Ionicons name="library" size={20} color={theme.colors.text} /> AI Caption
+              <Ionicons name="library" size={20} color={theme.colors.text} /> Alt Text
             </Text>
             <View style={[styles.captionContainer, { backgroundColor: theme.colors.primary + '10' }]}>
               <Text style={[styles.captionText, { color: theme.colors.text }]}>{image.caption}</Text>
@@ -215,11 +264,63 @@ const ImageDetailsScreen: React.FC<ImageDetailsProps> = ({ route, navigation }) 
           </View>
         )}
 
+        {/* Detailed Description */}
+        <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              <Ionicons name="document-text" size={20} color={theme.colors.text} /> Detailed Description
+            </Text>
+            {!image.detailedDescription && (
+              <TouchableOpacity 
+                style={[styles.generateButton, { backgroundColor: theme.colors.primary }]}
+                onPress={generateDetailedDescription}
+                disabled={isGeneratingDescription}
+              >
+                {isGeneratingDescription ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Ionicons name="add-circle" size={16} color="white" />
+                )}
+                <Text style={styles.generateButtonText}>
+                  {isGeneratingDescription ? 'Generating...' : 'Generate'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          
+          {image.detailedDescription ? (
+            <View style={[styles.captionContainer, { backgroundColor: theme.colors.secondary + '15' }]}>
+              <Text style={[styles.captionText, { color: theme.colors.text }]}>{image.detailedDescription}</Text>
+            </View>
+          ) : (
+            <View style={[styles.emptyContainer, { backgroundColor: theme.colors.background }]}>
+              <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
+                No detailed description yet. Tap "Generate" to create one.
+              </Text>
+            </View>
+          )}
+        </View>
+
         {/* Actions */}
         <View style={[styles.section, { backgroundColor: theme.colors.surface }]}>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             <Ionicons name="settings" size={20} color={theme.colors.text} /> Actions
           </Text>
+          
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: theme.colors.warning }]}
+            onPress={handleReprocess}
+            disabled={isReprocessing}
+          >
+            {isReprocessing ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Ionicons name="refresh" size={20} color="white" />
+            )}
+            <Text style={styles.actionButtonText}>
+              {isReprocessing ? 'Reprocessing...' : 'Reprocess Alt Text'}
+            </Text>
+          </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.actionButton, { backgroundColor: theme.colors.error }]}
@@ -393,11 +494,44 @@ const createStyles = (theme: any) => StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
+    marginBottom: 12,
   },
   actionButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  generateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    gap: 6,
+  },
+  generateButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: theme.colors.textSecondary + '40',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    textAlign: 'center',
   },
   bottomSpacing: {
     height: 32,

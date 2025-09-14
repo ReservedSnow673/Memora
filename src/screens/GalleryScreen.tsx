@@ -75,6 +75,17 @@ export default function GalleryScreen({ navigation }: GalleryScreenProps) {
             color="white" 
           />
         </View>
+        
+        {/* Detailed Description Indicator */}
+        {item.detailedDescription && (
+          <View style={[styles.detailedBadge, { backgroundColor: theme.colors.secondary }]}>
+            <Ionicons 
+              name="document-text" 
+              size={10} 
+              color="white" 
+            />
+          </View>
+        )}
       </View>
       
       {/* Caption Preview */}
@@ -93,7 +104,7 @@ export default function GalleryScreen({ navigation }: GalleryScreenProps) {
       <View style={styles.header}>
         <Text style={[styles.title, { color: theme.colors.text }]}>Gallery</Text>
         <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-          Your AI-captioned memories
+          Your captioned memories
         </Text>
       </View>
 
@@ -173,6 +184,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  detailedBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
   },
   captionPreview: {
     padding: 8,

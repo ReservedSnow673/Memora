@@ -6,6 +6,7 @@ export type ImageProcessingStatus = 'unprocessed' | 'processing' | 'processed' |
 export interface ProcessedImage extends ImageData {
   status: ImageProcessingStatus;
   caption?: string;
+  detailedDescription?: string;
   error?: string;
   processingStarted?: string;
   processingCompleted?: string;
@@ -71,6 +72,23 @@ const imagesSlice = createSlice({
         image.processingCompleted = new Date().toISOString();
       }
     },
+    updateImageDetailedDescription: (state, action: PayloadAction<{ id: string; detailedDescription: string }>) => {
+      const image = state.items.find(img => img.id === action.payload.id);
+      if (image) {
+        image.detailedDescription = action.payload.detailedDescription;
+      }
+    },
+    reprocessImage: (state, action: PayloadAction<string>) => {
+      const image = state.items.find(img => img.id === action.payload);
+      if (image) {
+        image.status = 'unprocessed';
+        image.caption = undefined;
+        image.detailedDescription = undefined;
+        image.error = undefined;
+        image.processingStarted = undefined;
+        image.processingCompleted = undefined;
+      }
+    },
     addToProcessingQueue: (state, action: PayloadAction<string>) => {
       if (!state.processingQueue.includes(action.payload)) {
         state.processingQueue.push(action.payload);
@@ -102,6 +120,8 @@ export const {
   updateImage,
   updateImageStatus,
   updateImageCaption,
+  updateImageDetailedDescription,
+  reprocessImage,
   addToProcessingQueue,
   removeFromProcessingQueue,
   setIsProcessing,

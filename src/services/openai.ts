@@ -24,7 +24,7 @@ export class OpenAIService {
       
       const prompt = isLongDescription 
         ? "You are an agent describing images to a blind person. There is an image attached with this prompt, describe it to a blind person in 1000 characters or less, but make sure the description is not generic. For example, for a kid smiling while cutting a cake, don't just describe it as \"Person cutting birthday cake\", make sure the description has the image. Only give me the image description, no other commentary."
-        : "You are an agent describing images to a blind person. There is an image attached with this prompt, describe it to a blind person in 150 characters or less, but make sure the description is not generic. For example, for a kid smiling while cutting a cake, don't just describe it as \"Person cutting birthday cake\", make sure the description has the image. Only give me the image description, no other commentary.";
+        : `Generate a concise alt text description for this image in 15 words or less. Focus on the main subject and key visual elements that would be important for accessibility. Do not include "Image of" or "Photo of" in your response.`;
 
       const response = await fetch(OPENAI_API_URL, {
         method: 'POST',
@@ -33,7 +33,7 @@ export class OpenAIService {
           'Authorization': `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini', // Using the more affordable mini model
+          model: 'gpt-4o', // Using the more affordable mini model
           messages: [
             {
               role: 'user',
@@ -53,7 +53,7 @@ export class OpenAIService {
             },
           ],
           max_tokens: isLongDescription ? 200 : 100,
-          temperature: 0.7,
+          temperature: 0.3,
         }),
       });
 
